@@ -19,6 +19,31 @@ except pygame.error as e:
     pygame.quit()
     sys.exit()
 
+# ============================================ ENEMIES ANIMATION =======================================
+
+# Load enemies animation frames
+enemies_frame_folder = 'enemies'
+enemies_frame = []
+
+try:
+    enemies_files = sorted(efile_name for efile_name in os.listdir(enemies_frame_folder) if efile_name.endswith('.png'))
+    for efile_name in enemies_files:
+        eframe_path = os.path.join(enemies_frame_folder, efile_name)
+        eframe = pygame.image.load(eframe_path)
+        enemies_frame.append(eframe)
+except (OSError, pygame.error) as e:
+    print(f"Error loading enemies animation frames: {e}")
+    pygame.quit()
+    sys.exit()
+
+eframe_count = len(enemies_frame)
+if eframe_count == 0:
+    print("No animation frames found in the 'enemies' directory.")
+    pygame.quit()
+    sys.exit()
+
+# ==========================================================================================================
+
 # Load Player animation frames
 frame_folder = 'frames'  # Directory containing frame images
 frames = []
@@ -46,12 +71,13 @@ frame_rate = 15  # Number of frames to show per second
 frame_duration = 1000 // frame_rate  # Milliseconds per frame
 last_update_time = pygame.time.get_ticks()
 
-#Initialize the background position and scroll speed
+# Initialize the background position and scroll speed
 bg_x = 0
-bg_speed = 10 # scroll speed of the background 
+bg_speed = 10  # Scroll speed of the background
 
-# Initialize sprite position
-sprite_x, sprite_y = -90, 180  # Starting position of the sprite
+# Initialize the player and enemy sprite positions
+sprite_x, sprite_y = -90, 180  # Player starting position
+esprite_x, esprite_y = 700, 180  # Enemy starting position
 
 # Initialize the exit flag
 running = True
@@ -61,6 +87,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    # =========================== BACKGROUND IMG CODE ===========================================
 
     # Scroll the background to the left
     bg_x -= bg_speed
@@ -74,14 +102,19 @@ while running:
     if bg_x < 0:
         screen.blit(background_image, (bg_x + screen_width, 0))
 
+    # ===========================================================================================
+
     # Update animation frame
     current_time = pygame.time.get_ticks()
     if current_time - last_update_time >= frame_duration:
         current_frame = (current_frame + 1) % frame_count
         last_update_time = current_time
 
-    # Draw the current frame of the sprite
+    # Draw the current frame of the player sprite
     screen.blit(frames[current_frame], (sprite_x, sprite_y))
+
+    # Draw the current frame of the enemy sprite
+    screen.blit(enemies_frame[current_frame], (esprite_x, esprite_y))
 
     # Update the display
     pygame.display.update()
@@ -92,5 +125,3 @@ while running:
 # Quit Pygame and exit the program
 pygame.quit()
 sys.exit()
-
-#acds
